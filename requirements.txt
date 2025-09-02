@@ -22,3 +22,4 @@ typing-extensions==4.15.0
     #   sqlalchemy
 tzdata==2025.2
     # via faker
+psycopg2-binary==2.9.9

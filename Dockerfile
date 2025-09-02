@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -18,4 +18,29 @@ VOLUME ["/app/storage"]
 
 EXPOSE 8000
 
-CMD ["uv", "run", "./src/main.py"]
+# CMD ["python", "main.py", "--action", "run_cli"]
+CMD ["python", "main.py"]
+
+# ENTRYPOINT ["python", "main.py"]
+# CMD ["uv", "python", "main.py"]
+
+
+
+# FROM python:3.12-slim
+
+# WORKDIR /app
+
+# # Для pip та curl (якщо потрібні)
+# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# COPY . .
+
+# RUN pip install --no-cache-dir -r requirements.txt \
+#     && mkdir -p storage
+
+# VOLUME ["/app/storage"]
+
+# EXPOSE 8000
+
+# CMD ["python", "main.py"]
+

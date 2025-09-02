@@ -16,8 +16,10 @@ class Student(Base):
     __tablename__ = "students"
     id = Column(Integer, primary_key=True, autoincrement=True)
     student_name = Column(String, nullable=False)
+    student_last_name = Column(String, nullable=False)
     group_id = Column(Integer, ForeignKey("groups.id"))
     ratings = relationship("Rating", back_populates="student")
+    group = relationship("Group", back_populates="students")
 
 
 class Teacher(Base):

@@ -1,6 +1,7 @@
 from ..config import config
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
 
 
 username = config.get("DB", "USER")
@@ -10,10 +11,26 @@ domain = config.get("DB", "DOMAIN")
 port = config.get("DB", "DB_PORT")
 
 
-#  f'postgresql://username:password@domain_name:port/database_name'
+DB_CONNECTION_URL = f"postgresql+asyncpg://{username}:{password}@{domain}:{port}/{db_name}"
 
-DB_CONNECTION_URL = f"postgresql://{username}:{password}@{domain}:{port}/{db_name}"
+# engine = create_engine(DB_CONNECTION_URL)
+# SessionLocal = sessionmaker(bind=engine)
 
-engine = create_engine(DB_CONNECTION_URL)
-DBSession = sessionmaker(bind=engine)
-db_session = DBSession()
+
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from contextlib import asynccontextmanager
+
+engine = create_async_engine(DB_CONNECTION_URL, echo=True)
+SessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+@asynccontextmanager
+async def session_manager():
+    async with SessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+
