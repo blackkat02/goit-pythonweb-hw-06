@@ -41,8 +41,6 @@ async def create_subject(name: str, teacher_id: int, session: AsyncSession):
 
 async def create_rating(student_id: int, subject_id: int, rating: int, session: AsyncSession):
     record = Rating(student_id=student_id, subject_id=subject_id, rating=rating, date=datetime.date.today())
-
-    # record = Rating(student_id=student_id, subject_id=subject_id, rating=rating, date_of=datetime.date.today())
     session.add(record)
     await session.commit()
     await session.refresh(record)

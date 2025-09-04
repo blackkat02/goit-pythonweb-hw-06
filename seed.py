@@ -4,12 +4,12 @@ from datetime import date
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+import faker
 
 from src.database.models import Base, Student, Group, Subject, Teacher, Rating
 from src.database.repository import create_student, create_group, create_teacher, create_subject, create_rating
 
 # Налаштування
-# DATABASE_URL = "postgresql+asyncpg://admin:admin@localhost:5432/hw_06_db"
 DATABASE_URL = "postgresql+asyncpg://admin:admin@postgres_db:5432/hw_06_db"
 
 engine = create_async_engine(DATABASE_URL)

@@ -228,12 +228,13 @@ async def interactive_loop(parser):
 
 async def main():
     parser = build_parser()
-    if len(sys.argv) == 1:
-        # Якщо немає аргументів → запускаємо інтерактивний режим
-        await interactive_loop(parser)
-    else:
-        args = parser.parse_args()
-        await args.func(args)
+    # if len(sys.argv) == 1:
+    #     # Якщо немає аргументів → запускаємо інтерактивний режим
+    #     await interactive_loop(parser)
+    #     # return
+    # else:
+    args = parser.parse_args()
+    await args.func(args)
 
 
 if __name__ == "__main__":

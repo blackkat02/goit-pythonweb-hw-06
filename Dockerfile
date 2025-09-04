@@ -1,46 +1,57 @@
-FROM python:3.12-slim
-
-WORKDIR /app
-
-RUN apt-get update \
-    && apt-get install -y curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -LsSf https://astral.sh/uv/install.sh | sh
-
-ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
-
-COPY . .
-
-RUN uv pip install --system -r requirements.txt \
-    && mkdir -p storage
-
-VOLUME ["/app/storage"]
-
-EXPOSE 8000
-
-# CMD ["python", "main.py", "--action", "run_cli"]
-CMD ["python", "main.py"]
-
-# ENTRYPOINT ["python", "main.py"]
-# CMD ["uv", "python", "main.py"]
-
-
-
 # FROM python:3.12-slim
 
 # WORKDIR /app
 
-# # Для pip та curl (якщо потрібні)
-# RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update \
+#     && apt-get install -y curl \
+#     && rm -rf /var/lib/apt/lists/* \
+#     && curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# ENV PATH="/root/.cargo/bin:/root/.local/bin:${PATH}"
 
 # COPY . .
 
-# RUN pip install --no-cache-dir -r requirements.txt \
+# RUN uv pip install --system -r requirements.txt \
 #     && mkdir -p storage
 
 # VOLUME ["/app/storage"]
 
 # EXPOSE 8000
 
-# CMD ["python", "main.py"]
+# CMD ["tail", "-f", "/dev/null"]
 
+
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Встановлюємо curl і uv
+RUN apt-get update \
+    && apt-get install -y curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Додаємо uv у PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Спочатку копіюємо тільки requirements.txt (для кешування)
+COPY requirements.txt .
+
+# Встановлюємо залежності
+RUN uv pip install --system -r requirements.txt \
+    && mkdir -p /app/storage
+
+# Копіюємо весь код
+COPY . .
+
+VOLUME ["/app/storage"]
+
+EXPOSE 8000
+
+CMD ["tail", "-f", "/dev/null"]
+
+# Тут можна залишити tail для дебагу або запускати застосунок
+# CMD ["python", "main.py"]
+# або, якщо це FastAPI:
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
