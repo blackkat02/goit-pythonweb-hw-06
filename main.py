@@ -206,33 +206,8 @@ def build_parser():
     return parser
 
 
-async def interactive_loop(parser):
-    print("💡 Інтерактивний режим CLI (введіть 'exit' для виходу)")
-    while True:
-        try:
-            command = input(">>> ")
-            if command.strip().lower() in {"exit", "quit"}:
-                print("👋 Вихід...")
-                break
-            if not command.strip():
-                continue
-
-            args = parser.parse_args(shlex.split(command))
-            await args.func(args)
-        except SystemExit:
-            # argparse викликає SystemExit при помилках..
-            continue
-        except Exception as e:
-            print(f"❌ Помилка: {e}")
-
-
 async def main():
     parser = build_parser()
-    # if len(sys.argv) == 1:
-    #     # Якщо немає аргументів → запускаємо інтерактивний режим
-    #     await interactive_loop(parser)
-    #     # return
-    # else:
     args = parser.parse_args()
     await args.func(args)
 
