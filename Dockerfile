@@ -53,5 +53,4 @@ CMD ["tail", "-f", "/dev/null"]
 
 # Тут можна залишити tail для дебагу або запускати застосунок
 # CMD ["python", "main.py"]
-# або, якщо це FastAPI:
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+

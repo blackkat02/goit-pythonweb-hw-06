@@ -1,5 +1,86 @@
 # goit-pythonweb-hw-06
+
+🚀 Getting Started
+To run this project, you need to have Docker and Docker Compose installed.
+
+Clone the repository:
+
+Bash
+
+git clone [your_repository_url]
+cd [your_repository_folder]
+Build and run the Docker containers:
+
+Bash
+
+docker-compose up -d --build
+This command will build the Python application image and start the PostgreSQL database and the application containers in the background.
+
+📜 Usage Examples
+The application is controlled via the main.py script inside the Docker container. All commands are executed using docker exec.
+
+1. Database Seeding
+Use this command to fill the database with sample data. This is the first step you should perform.
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 /usr/local/bin/python main.py seed
+2. Creating New Entities
+Use the create command to add new records to the database.
+
+Create a Student:
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Student --name Іван --last_name Петров --group_id 1
+Create a Teacher:
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Teacher --name "Марія Іванівна"
+3. Executing Select Queries
+The application includes predefined queries (select_1 to select_10) to retrieve specific data from the database.
+
+Find the top 5 students with the highest average grade:
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_1
+Find the best student in a specific subject (e.g., "History"):
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_2 --subject_name "History"
+Find all students in a specific group (e.g., "Group 1"):
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_6 --group_name "Group 1"
+Find a list of courses a specific student attends (e.g., student ID 5):
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_9 --student_id 5
+Find a list of courses a specific teacher teaches a specific student:
+
+Bash
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_10 --student_id 2 --teacher_name "Марія Іванівна"
+
+🔍 How It Works
+The application's logic is structured to separate concerns:
+
+main.py acts as a dispatcher. It uses argparse to parse commands and their arguments.
+
+Handlers (e.g., handle_create, handle_select) contain the core business logic and run the database operations.
+
+Formatters display the results in a human-readable format, keeping the main logic clean.
+
+Repository Functions (in src/database/repository.py) contain the actual SQLAlchemy queries for each select operation.
+
+
 docker exec -it goit-pythonweb-hw-06-postgres_db-1 psql -U admin -d hw_06_db  -- enter to DB
+
 SELECT student_id, AVG(rating) FROM ratings GROUP BY student_id ORDER BY AVG(rating) DESC LIMIT 5;  -- Знайти 5 студентів із найбільшим середнім балом з усіх предметів.
 SELECT student_id, subject_id, AVG(rating) FROM ratings WHERE subject_id = 1 GROUP BY student_id, subject_id ORDER BY AVG(rating) DESC LIMIT 1;  -- Знайти студента із найвищим середнім балом з певного предмета.
 SELECT
