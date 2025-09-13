@@ -23,21 +23,19 @@ The application is controlled via the main.py script inside the Docker container
 Use this command to fill the database with sample data. This is the first step you should perform.
 
 Bash
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py seed
 
-docker exec -it goit-pythonweb-hw-06-app-1 /usr/local/bin/python main.py seed
 2. Creating New Entities
 Use the create command to add new records to the database.
 
 Create a Student:
-
 Bash
-
 docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Student --name Іван --last_name Петров --group_id 1
+
 Create a Teacher:
-
 Bash
-
 docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Teacher --name "Марія Іванівна"
+
 3. Executing Select Queries
 The application includes predefined queries (select_1 to select_10) to retrieve specific data from the database.
 

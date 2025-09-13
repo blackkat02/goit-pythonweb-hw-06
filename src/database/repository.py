@@ -7,7 +7,9 @@ from src.database.models import Student, Group, Teacher, Subject, Rating
 
 
 # ---------- CREATE ----------
-async def create_student(name: str, last_name: str, group_id: int, session: AsyncSession):
+async def create_student(
+    name: str, last_name: str, group_id: int, session: AsyncSession
+):
     student = Student(student_name=name, student_last_name=last_name, group_id=group_id)
     session.add(student)
     await session.commit()
@@ -39,8 +41,15 @@ async def create_subject(name: str, teacher_id: int, session: AsyncSession):
     return subject
 
 
-async def create_rating(student_id: int, subject_id: int, rating: int, session: AsyncSession):
-    record = Rating(student_id=student_id, subject_id=subject_id, rating=rating, date=datetime.date.today())
+async def create_rating(
+    student_id: int, subject_id: int, rating: int, session: AsyncSession
+):
+    record = Rating(
+        student_id=student_id,
+        subject_id=subject_id,
+        rating=rating,
+        date=datetime.date.today(),
+    )
     session.add(record)
     await session.commit()
     await session.refresh(record)
@@ -101,59 +110,49 @@ async def get_rating_by_id(rating_id: int, session: AsyncSession):
 
 # ---------- SELECT QUERIES ----------
 
+
 async def select_1(session: AsyncSession):
     """
     Знайти 5 студентів із найбільшим середнім балом з усіх предметів.
     """
-    stmt = select(
-        Student.student_name,
-        func.avg(Rating.rating).label('avg_rating')
-    ).join(
-        Rating, Student.id == Rating.student_id
-    ).group_by(
-        Student.id
-    ).order_by(
-        text('avg_rating DESC')
-    ).limit(5)
+    stmt = (
+        select(Student.student_name, func.avg(Rating.rating).label("avg_rating"))
+        .join(Rating, Student.id == Rating.student_id)
+        .group_by(Student.id)
+        .order_by(text("avg_rating DESC"))
+        .limit(5)
+    )
     result = await session.execute(stmt)
     return result.all()
+
 
 async def select_2(subject_name: str, session: AsyncSession):
     """
     Знайти студента з найвищим середнім балом з певного предмета.
     """
-    stmt = select(
-        Student.student_name,
-        func.avg(Rating.rating).label('avg_rating')
-    ).join(
-        Rating, Student.id == Rating.student_id
-    ).join(
-        Subject, Rating.subject_id == Subject.id
-    ).where(
-        Subject.subject_name == subject_name
-    ).group_by(
-        Student.id
-    ).order_by(
-        text('avg_rating DESC')
-    ).limit(1)
+    stmt = (
+        select(Student.student_name, func.avg(Rating.rating).label("avg_rating"))
+        .join(Rating, Student.id == Rating.student_id)
+        .join(Subject, Rating.subject_id == Subject.id)
+        .where(Subject.subject_name == subject_name)
+        .group_by(Student.id)
+        .order_by(text("avg_rating DESC"))
+        .limit(1)
+    )
     result = await session.execute(stmt)
     return result.first()
+
 
 async def select_3(group_name: str, session: AsyncSession):
     """
     Знайти середній бал у групах з певного предмета.
     """
-    stmt = select(
-        Group.group_name,
-        func.avg(Rating.rating).label('avg_rating')
-    ).join(
-        Student, Group.id == Student.group_id
-    ).join(
-        Rating, Student.id == Rating.student_id
-    ).where(
-        Group.group_name == group_name
-    ).group_by(
-        Group.id
+    stmt = (
+        select(Group.group_name, func.avg(Rating.rating).label("avg_rating"))
+        .join(Student, Group.id == Student.group_id)
+        .join(Rating, Student.id == Rating.student_id)
+        .where(Group.group_name == group_name)
+        .group_by(Group.id)
     )
     result = await session.execute(stmt)
     return result.first()
@@ -163,87 +162,76 @@ async def select_4(session: AsyncSession):
     """
     Знайти середній бал на потоці (по всій базі даних).
     """
-    stmt = select(func.avg(Rating.rating).label('avg_rating'))
+    stmt = select(func.avg(Rating.rating).label("avg_rating"))
     result = await session.execute(stmt)
     return result.first()
+
 
 async def select_5(teacher_name: str, session: AsyncSession):
     """
     Знайти, які курси читає певний викладач.
     """
-    stmt = select(
-        Subject.subject_name
-    ).join(
-        Teacher, Subject.teacher_id == Teacher.id
-    ).where(
-        Teacher.teacher_name == teacher_name
+    stmt = (
+        select(Subject.subject_name)
+        .join(Teacher, Subject.teacher_id == Teacher.id)
+        .where(Teacher.teacher_name == teacher_name)
     )
     result = await session.execute(stmt)
     return result.scalars().all()
+
 
 async def select_6(group_name: str, session: AsyncSession):
     """
     Знайти список студентів у певній групі.
     """
-    stmt = select(
-        Student.student_name
-    ).join(
-        Group, Student.group_id == Group.id
-    ).where(
-        Group.group_name == group_name
+    stmt = (
+        select(Student.student_name)
+        .join(Group, Student.group_id == Group.id)
+        .where(Group.group_name == group_name)
     )
     result = await session.execute(stmt)
     return result.scalars().all()
+
 
 async def select_7(group_name: str, subject_name: str, session: AsyncSession):
     """
     Знайти оцінки студентів у окремій групі з певного предмета.
     """
-    stmt = select(
-        Student.student_name,
-        Rating.rating
-    ).join(
-        Group, Student.group_id == Group.id
-    ).join(
-        Rating, Student.id == Rating.student_id
-    ).join(
-        Subject, Rating.subject_id == Subject.id
-    ).where(
-        Group.group_name == group_name
-    ).where(
-        Subject.subject_name == subject_name
+    stmt = (
+        select(Student.student_name, Rating.rating)
+        .join(Group, Student.group_id == Group.id)
+        .join(Rating, Student.id == Rating.student_id)
+        .join(Subject, Rating.subject_id == Subject.id)
+        .where(Group.group_name == group_name)
+        .where(Subject.subject_name == subject_name)
     )
     result = await session.execute(stmt)
     return result.all()
+
 
 async def select_8(teacher_name: str, session: AsyncSession):
     """
     Знайти середній бал, який поставив певний викладач зі своїх предметів.
     """
-    stmt = select(
-        func.avg(Rating.rating).label('avg_rating')
-    ).join(
-        Subject, Rating.subject_id == Subject.id
-    ).join(
-        Teacher, Subject.teacher_id == Teacher.id
-    ).where(
-        Teacher.teacher_name == teacher_name
+    stmt = (
+        select(func.avg(Rating.rating).label("avg_rating"))
+        .join(Subject, Rating.subject_id == Subject.id)
+        .join(Teacher, Subject.teacher_id == Teacher.id)
+        .where(Teacher.teacher_name == teacher_name)
     )
     result = await session.execute(stmt)
     return result.first()
+
 
 async def select_9(student_id: int, session: AsyncSession):
     """
     Знайти список курсів, які відвідує студент.
     """
-    stmt = select(
-        Subject.subject_name
-    ).join(
-        Rating, Subject.id == Rating.subject_id
-    ).where(
-        Rating.student_id == student_id
-    ).group_by(
-        Subject.id
+    stmt = (
+        select(Subject.subject_name)
+        .join(Rating, Subject.id == Rating.subject_id)
+        .where(Rating.student_id == student_id)
+        .group_by(Subject.id)
     )
     result = await session.execute(stmt)
     return result.scalars().all()
@@ -253,21 +241,13 @@ async def select_10(student_id: int, teacher_name: str, session: AsyncSession):
     """
     Список курсів, які певний викладач читає певному студенту.
     """
-    stmt = select(
-        Subject.subject_name
-    ).join(
-        Rating, Subject.id == Rating.subject_id
-    ).join(
-        Teacher, Subject.teacher_id == Teacher.id
-    ).where(
-        Rating.student_id == student_id
-    ).where(
-        Teacher.teacher_name == teacher_name
-    ).group_by(
-        Subject.id
+    stmt = (
+        select(Subject.subject_name)
+        .join(Rating, Subject.id == Rating.subject_id)
+        .join(Teacher, Subject.teacher_id == Teacher.id)
+        .where(Rating.student_id == student_id)
+        .where(Teacher.teacher_name == teacher_name)
+        .group_by(Subject.id)
     )
     result = await session.execute(stmt)
     return result.scalars().all()
-
-
-

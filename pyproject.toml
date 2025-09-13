@@ -9,4 +9,5 @@ dependencies = [
     "asyncpg>=0.30.0",
     "faker>=37.6.0",
     "sqlalchemy>=2.0.43",
+    "black==25.1.0",
 ]

@@ -11,17 +11,16 @@ domain = config.get("DB", "DOMAIN")
 port = config.get("DB", "DB_PORT")
 
 
-DB_CONNECTION_URL = f"postgresql+asyncpg://{username}:{password}@{domain}:{port}/{db_name}"
-
-# engine = create_engine(DB_CONNECTION_URL)
-# SessionLocal = sessionmaker(bind=engine)
-
+DB_CONNECTION_URL = (
+    f"postgresql+asyncpg://{username}:{password}@{domain}:{port}/{db_name}"
+)
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from contextlib import asynccontextmanager
 
 engine = create_async_engine(DB_CONNECTION_URL, echo=True)
 SessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
 
 @asynccontextmanager
 async def session_manager():
@@ -32,5 +31,3 @@ async def session_manager():
         except Exception:
             await session.rollback()
             raise
-
-
