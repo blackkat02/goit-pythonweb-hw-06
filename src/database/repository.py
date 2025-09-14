@@ -224,6 +224,7 @@ async def select_8(teacher_name: str, session: AsyncSession):
 
 
 async def select_9(student_id: int, session: AsyncSession):
+    print(f"Функція select_9() отримала: student_id={student_id}, session={session}")
     """
     Знайти список курсів, які відвідує студент.
     """

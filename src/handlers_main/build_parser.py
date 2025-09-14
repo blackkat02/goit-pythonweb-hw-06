@@ -1,29 +1,26 @@
 import argparse
-# import asyncio
-# import sys
+from src.handlers_main.decorators import command, formatter, _COMMAND_HANDLERS  #  _SELECT_FORMATTERS,
+from src.handlers_main.handlers import handle_select
 
-# from seed import main as seed_main
-from src.handlers.handlers import _COMMAND_HANDLERS, handle_select
-# from src.database.db import session_manager
-# from src.database.repository import (
-#     create_student,
-#     create_group,
-#     create_subject,
-#     create_teacher,
-#     create_rating,
-#     select_1,
-#     select_2,
-#     select_3,
-#     select_4,
-#     select_5,
-#     select_6,
-#     select_7,
-#     select_8,
-#     select_9,
-#     select_10,
-# )
+from src.database.db import session_manager
+from src.database.repository import (
+    create_student,
+    create_group,
+    create_subject,
+    create_teacher,
+    create_rating,
+    select_1,
+    select_2,
+    select_3,
+    select_4,
+    select_5,
+    select_6,
+    select_7,
+    select_8,
+    select_9,
+    select_10,
+)
 
-# ---------- BUILDER AND MAIN ----------
 def build_parser():
     parser = argparse.ArgumentParser(description="🎓 CLI App for hw_06_db")
     subparsers = parser.add_subparsers(dest="action", help="Дія")

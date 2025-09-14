@@ -34,36 +34,41 @@ docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Student --na
 
 Create a Teacher:
 Bash
-docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Teacher --name "Марія Іванівна"
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py create -m Teacher --name "Марія Іваненко"
 
 3. Executing Select Queries
 The application includes predefined queries (select_1 to select_10) to retrieve specific data from the database.
 
 Find the top 5 students with the highest average grade:
-
 Bash
-
 docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_1
+
 Find the best student in a specific subject (e.g., "History"):
-
 Bash
-
 docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_2 --subject_name "History"
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_3 --group_name 
+"Group 1"
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_4
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_5 --teacher_name "Good Teacher"
+
 Find all students in a specific group (e.g., "Group 1"):
-
 Bash
-
 docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_6 --group_name "Group 1"
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_7 --group_name "Group 1" --subject_name "Good Teacher"
+
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_8 --teacher_name "Good Teacher"     
+
 Find a list of courses a specific student attends (e.g., student ID 5):
-
 Bash
-
 docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_9 --student_id 5
+
 Find a list of courses a specific teacher teaches a specific student:
-
 Bash
-
-docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_10 --student_id 2 --teacher_name "Марія Іванівна"
+docker exec -it goit-pythonweb-hw-06-app-1 python main.py select_10 --student_id 2 --teacher_name "Марія Іваненко"
 
 🔍 How It Works
 The application's logic is structured to separate concerns:
@@ -80,25 +85,10 @@ Repository Functions (in src/database/repository.py) contain the actual SQLAlche
 docker exec -it goit-pythonweb-hw-06-postgres_db-1 psql -U admin -d hw_06_db  -- enter to DB
 
 SELECT student_id, AVG(rating) FROM ratings GROUP BY student_id ORDER BY AVG(rating) DESC LIMIT 5;  -- Знайти 5 студентів із найбільшим середнім балом з усіх предметів.
-SELECT student_id, subject_id, AVG(rating) FROM ratings WHERE subject_id = 1 GROUP BY student_id, subject_id ORDER BY AVG(rating) DESC LIMIT 1;  -- Знайти студента із найвищим середнім балом з певного предмета.
-SELECT
-    g.group_name,
-    s.subject_name,
-    AVG(r.rating)
-FROM
-    ratings AS r
-JOIN
-    students AS st ON r.student_id = st.id
-JOIN
-    groups AS g ON st.group_id = g.id
-JOIN
-    subjects AS s ON r.subject_id = s.id
-GROUP BY
-    g.group_name,
-    s.subject_name
-ORDER BY
-    g.group_name,
-    AVG(r.rating) DESC;  -- Знайти середній бал у групах з певного предмета.
+SELECT student_id, subject_id, AVG(rating) FROM ratings WHERE subject_id = 1 GROUP BY student_id, subject_id ORDER BY AVG(rating) DESC LIMIT 5;  -- Знайти студента із найвищим середнім балом з певного предмета.
+SELECT g.group_name, s.subject_name, AVG(r.rating) FROM ratings AS r JOIN students AS st ON r.student_id = st.id
+JOIN groups AS g ON st.group_id = g.id JOIN subjects AS s ON r.subject_id = s.id
+GROUP BY g.group_name, s.subject_name ORDER BY g.group_name, AVG(r.rating) DESC;  -- Знайти середній бал у групах з певного предмета.
 SELECT AVG(rating) FROM ratings;  -- Знайти середній бал на потоці (по всій таблиці оцінок).
 SELECT * FROM subjects WHERE teacher_id = 2;  -- Знайти які курси читає певний викладач.
 SELECT id, student_name, student_last_name FROM students WHERE group_id = 1;  -- Знайти список студентів у певній групі.

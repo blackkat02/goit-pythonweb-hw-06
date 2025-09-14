@@ -1,10 +1,6 @@
-# import argparse
-# import asyncio
-# import sys
-
 from seed import main as seed_main
-
-from src.handlers.decorators import command, _SELECT_FORMATTERS
+from src.handlers_main.decorators import command, _SELECT_FORMATTERS,  _COMMAND_HANDLERS  # formatter,
+from src.handlers_main.formatters import formatter
 from src.database.db import session_manager
 from src.database.repository import (
     create_student,
@@ -12,20 +8,19 @@ from src.database.repository import (
     create_subject,
     create_teacher,
     create_rating,
-    # select_1,
-    # select_2,
-    # select_3,
-    # select_4,
-    # select_5,
-    # select_6,
-    # select_7,
-    # select_8,
-    # select_9,
-    # select_10,
+    select_1,
+    select_2,
+    select_3,
+    select_4,
+    select_5,
+    select_6,
+    select_7,
+    select_8,
+    select_9,
+    select_10,
 )
 
 
-# ---------- HANDLERS ----------
 @command("create")
 async def handle_create(args):
     async with session_manager() as session:
@@ -61,6 +56,8 @@ async def handle_select(repo_func, args):
     Універсальний обробник для всіх запитів SELECT.
     Це усуває дублювання коду в окремих функціях handle_select_N.
     """
+    print(f"Отримані аргументи: {vars(args)}")
+
     async with session_manager() as session:
         # Передаємо лише ті аргументи, які потрібні функції репозиторію
         call_kwargs = {
@@ -68,10 +65,12 @@ async def handle_select(repo_func, args):
             for k, v in vars(args).items()
             if k not in ["func", "action", "repo_func"]
         }
-        result = await repo_func(session, **call_kwargs)
+        result = await repo_func(session=session, **call_kwargs)
 
         formatter_func = _SELECT_FORMATTERS.get(args.action)
         if formatter_func:
             formatter_func(result, args)
         else:
             print("❌ Невідома дія вибірки.")
+
+
